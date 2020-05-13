@@ -44,35 +44,11 @@ wappsto.get('device', {
 
         switch (extsync_request.uri.replace('extsync', '')) {
           case '/search':
-            let valueNames = [];
-            device.get('value').forEach(v => {
-              valueNames.push(v.attributes.name);
-            });
-            sendData(extsync_request, 200, valueNames);
+            search();
             break;
 
           case '/query':
-            let jsonBody = JSON.parse(extsync_request.body);
-            let series = [];
-
-            jsonBody.targets.forEach(tar => {
-              let value = device.get('value').findWhere({ 'name': tar.target });
-              if (value) {
-                let reportState = value.get('state').findWhere({ 'type': 'Report' });
-                if (reportState) {
-                  series.push({
-                    target: tar.target,
-                    datapoints: getDataArray(reportState, jsonBody.range.from, jsonBody.range.to, jsonBody.maxDataPoints)
-                  });
-                }
-              }
-            });
-            console.log("Completed package:");
-            console.log(series);
-            console.log(testseries);
-            console.log(JSON.stringify(series));
-            console.log(JSON.stringify(testseries));
-            sendData(extsync_request, 201, series);
+            query();
             break;
 
           case '/annotations':
@@ -96,6 +72,7 @@ wappsto.get('device', {
 
     }
   },
+  
   error: (deviceCollection, response) => {
     // you receive an error when you don't have any devices. That is why we have to subscribe to stream
     if (response.status === 503) {
@@ -104,8 +81,38 @@ wappsto.get('device', {
   }
 });
 
-
 // --- functions --- //
+function search(){
+  let valueNames = [];
+    device.get('value').forEach(v => {
+      valueNames.push(v.attributes.name);
+    });
+    sendData(extsync_request, 200, valueNames);
+}
+
+function query(){
+  let jsonBody = JSON.parse(extsync_request.body);
+    let series = [];
+
+    jsonBody.targets.forEach(tar => {
+      let value = device.get('value').findWhere({ 'name': tar.target });
+      if (value) {
+        let reportState = value.get('state').findWhere({ 'type': 'Report' });
+        if (reportState) {
+          series.push({
+            target: tar.target,
+            datapoints: getDataArray(reportState, jsonBody.range.from, jsonBody.range.to, jsonBody.maxDataPoints)
+          });
+        }
+      }
+    });
+    console.log("Completed package:");
+    console.log(series);
+    console.log(testseries);
+    console.log(JSON.stringify(series));
+    console.log(JSON.stringify(testseries));
+    sendData(extsync_request, 201, series);
+}
 
 function sendData(extsync_request, httpcode, data) {
   wappsto.sendExtsync({
