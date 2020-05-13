@@ -22,7 +22,7 @@ const testseries = [
 
 // Require Devices that matches "Sosche HD Air Ferrule" name. second argument provides a message that explains the need of this request
 wappsto.get('device', {
-  name: 'Sosche HD Air Ferrule'
+  name: 'Breph GPS Auto Bridge'
 }, {
   expand: 3,
   quantity: "all",
@@ -33,7 +33,7 @@ wappsto.get('device', {
     let device = deviceCollection.first();
     if (device) {
       // log device in the browser console
-      //console.log("Here is the '" + device.get('name') + "' device!");
+      console.log("Here is the '" + device.get('name') + "' device!");
       //console.log(JSON.stringify(device));
       //console.log({ device });
 
@@ -44,11 +44,11 @@ wappsto.get('device', {
 
         switch (extsync_request.uri.replace('extsync', '')) {
           case '/search':
-            search();
+            search(extsync_request, device);
             break;
 
           case '/query':
-            query();
+            query(extsync_request, device);
             break;
 
           case '/annotations':
@@ -72,17 +72,18 @@ wappsto.get('device', {
 
     }
   },
-  
+
   error: (deviceCollection, response) => {
     // you receive an error when you don't have any devices. That is why we have to subscribe to stream
     if (response.status === 503) {
       alert('service unavailable');
     }
+    console.log(response);
   }
 });
 
 // --- functions --- //
-function search(){
+function search(extsync_request, device){
   let valueNames = [];
     device.get('value').forEach(v => {
       valueNames.push(v.attributes.name);
@@ -90,7 +91,7 @@ function search(){
     sendData(extsync_request, 200, valueNames);
 }
 
-function query(){
+function query(extsync_request, device){
   let jsonBody = JSON.parse(extsync_request.body);
     let series = [];
 
