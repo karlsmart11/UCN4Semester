@@ -5,10 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <script src="https://cdn.jsdelivr.net/npm/wapp-api@latest/browser/wapp-api.js"></script>
     <script src="main.js"></script>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
   </head>
   <body>
-    <h1>TEST-Wapp</h1>
-    <section>
+    <section class="contenedor seccion center">
+      <div class="images-all">
+        <div class="images">
+          <img src="img/grafana-cover.png" alt="Icono Seguridad" />
+        </div>
+        <div class="images">
+          <img src="img/seluxit-logo-alt.png" alt="Icono Seguridad" />
+        </div>
+        <div class="images">
+          <img src="img/UCN-English-logo-PNG.png" alt="Icono Seguridad" />
+        </div>
+      </div>
+    </section>
+
+    <div class="contenedor seccion center">
+      <h1>Grafana Wapp</h1>
+    </div>
+    <section class="contenedor seccion center text-justify">
       <h2>How to get a device</h2>
       <p>
         This example shows how to get access to a user device. Once you run the
@@ -19,8 +36,23 @@
         A permissions given to this application can be reset by
         uninstalling/reinstalling it in Wappsto.
       </p>
+
+      <p class="space">
+        The name of device can be change in order to get different data
+      </p>
+      <form action="#" id="form" method="POST" onsubmit="return false">
+        <label for="deviceName"> </label>
+        <input type="text" id="deviceName" name="deviceName" />
+        <input type="submit" value="Set name" />
+      </form>
     </section>
-    <!-- <iframe src="http://localhost:3000/d-solo/SZ4e8vXZk/testdash?orgId=1&from=1584485310961&to=1584486210961&panelId=2" width="900" height="400" frameborder="0"></iframe> -->
-    <iframe src="https://snapshot.raintank.io/dashboard/snapshot/gpYs6pWCVYit8Wxam0empX6l60aXyHdm" width="900" height="1000" frameborder="0"/>
+<!--     <div class="contenedor seccion center">
+      <iframe
+        src="https://snapshot.raintank.io/dashboard/snapshot/gpYs6pWCVYit8Wxam0empX6l60aXyHdm"
+        width="900"
+        height="1000"
+        frameborder="0"
+      />
+    </div> -->
   </body>
 </html>
