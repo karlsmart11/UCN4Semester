@@ -53,7 +53,10 @@ function getDevice(deviceName) {
         if (device) {
           // log device in the browser console
           console.log("Here is the '" + device.get("name") + "' device!");
-
+          
+          var spanDeviceConnected = document.getElementById("NameSelected");
+           spanDeviceConnected.innerHTML="The device "+selectedDevice+" is connected";
+          
           // Subscibe to the wappsto extsync service for direct communication.
           wappsto.wStream.subscribe("/extsync");
 
