@@ -11,13 +11,13 @@
     <section class="contenedor seccion center">
       <div class="images-all">
         <div class="images">
-          <img src="img/grafana-cover.png" alt="Icono Seguridad" />
+          <img src="grafana-cover.png" alt="Image Unavailable" />
         </div>
         <div class="images">
-          <img src="img/seluxit-logo-alt.png" alt="Icono Seguridad" />
+          <img src="seluxit-logo-alt.png" alt="Image Unavailable" />
         </div>
         <div class="images">
-          <img src="img/UCN-English-logo-PNG.png" alt="Icono Seguridad" />
+          <img src="UCN-English-logo-PNG.png" alt="Image Unavailable" />
         </div>
       </div>
     </section>
@@ -26,11 +26,11 @@
       <h1>Grafana Wapp</h1>
     </div>
     <section class="contenedor seccion center text-justify">
-      <h2>How to get a device</h2>
+      <h2>Introduction</h2>
       <p>
-        This example shows how to get access to a user device. Once you run the
-        application, it will make a request to get device data from a network
-        that is created by easy_fake_network.
+        The porpuse of this wapp is to send the values of a Wappsto device to a Grafana server.
+        To do this you need enter the full name of the device below, and click 'Set name'.
+        Then a request will be sent to get that device. The first time this is done you need to accept the permissions of that device.
       </p>
       <p>
         A permissions given to this application can be reset by
@@ -38,7 +38,7 @@
       </p>
 
       <p class="space">
-        The name of device can be change in order to get different data
+        The device can be changed in order to get different data. Simply enter a new name below.
       </p>
       <form action="#" id="form" method="POST" onsubmit="return false">
         <label for="deviceName"> </label>
@@ -46,8 +46,9 @@
         <input type="submit" value="Set name" />
       </form>
       
-        <span  class="NameSelected"></span>
+        <span  id="NameSelected"></span>
     </section>
+    <div id="output" class="contenedor seccion center"></div>
 <!--     <div class="contenedor seccion center">
       <iframe
         src="https://snapshot.raintank.io/dashboard/snapshot/gpYs6pWCVYit8Wxam0empX6l60aXyHdm"

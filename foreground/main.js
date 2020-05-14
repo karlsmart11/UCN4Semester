@@ -1,8 +1,9 @@
 //get data from the DOM
-var selectedDevice;
+var selectedDevice, output;
 
 window.addEventListener("load", () => {
   var f1 = document.querySelector("#form");
+  output = document.getElementById("output");
 
   f1.addEventListener("submit", function () {
     selectedDevice = document.querySelector("#deviceName").value;
@@ -18,7 +19,7 @@ const myMessage =
 
 const testseries = [
   {
-    target: "Value 1",
+    target: "Amor Supremo",
     datapoints: [
       [12, Date.now() - 2000],
       [33, Date.now() - 1000],
@@ -26,7 +27,7 @@ const testseries = [
     ],
   },
   {
-    target: "Value 2",
+    target: "Bird Set Free",
     datapoints: [
       [-14, Date.now() - 2000],
       [17, Date.now() - 1000],
@@ -53,10 +54,11 @@ function getDevice(deviceName) {
         if (device) {
           // log device in the browser console
           console.log("Here is the '" + device.get("name") + "' device!");
-          
+
           var spanDeviceConnected = document.getElementById("NameSelected");
-           spanDeviceConnected.innerHTML="The device "+selectedDevice+" is connected";
-          
+          spanDeviceConnected.innerHTML =
+            "The device " + device.get("name") + " is connected";
+
           // Subscibe to the wappsto extsync service for direct communication.
           wappsto.wStream.subscribe("/extsync");
 
@@ -158,6 +160,7 @@ function sendData(extsync_request, httpcode, data) {
       },
     },
   });
+  writeToScreen("Response sent: " + data);
 }
 
 function getDataArray(reportState, startDate, endDate, limit) {
@@ -205,6 +208,13 @@ function getLogs(reportState, startDate, endDate, limit) {
       },
     });
   });
+}
+
+function writeToScreen(msg) {
+  var pre = document.createElement("p");
+  pre.style.wordWrap = "break-word";
+  pre.innerHTML = msg;
+  output.appendChild(pre);
 }
 
 function logger(series, testseries) {
