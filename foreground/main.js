@@ -123,26 +123,58 @@ function query(extsync_request, device) {
   // Parse the Grafana request to a workable object.
   let jsonBody = JSON.parse(extsync_request.body);
   let series = [];
+  let logsPromises = [];
 
   jsonBody.targets.forEach((tar) => {
     let value = device.get("value").findWhere({ name: tar.target });
     if (value) {
       let reportState = value.get("state").findWhere({ type: "Report" });
       if (reportState) {
-        series.push({
-          target: tar.target,
-          datapoints: getDataArray(
+        logsPromises.push(
+          getLogs(
             reportState,
             jsonBody.range.from,
             jsonBody.range.to,
             jsonBody.maxDataPoints
-          ),
-        });
+          )
+        );
+        series.push({ target: tar.target, datapoints: [] });
       }
     }
   });
-  logger(series, testseries);
-  sendData(extsync_request, 201, series);
+  Promise.all(logsPromises).then((values) => {
+    // values = [{..}, {..}, {..}]
+
+    for (let i = 0; i < values.length; i++) {
+      const data = values[i];
+      let parsedArray = [];
+      data.forEach((e) => {
+        // e = {data: num, selected_timestamp: Date} -> [num, num]
+        parsedArray.push([parseInt(e.data), Date.parse(e.selected_timestamp)]);
+      });
+      series[i].datapoints = parsedArray;
+    }
+
+    logger(series, testseries);
+    sendData(extsync_request, 201, series);
+  });
+}
+
+function getDataArray(reportState, startDate, endDate, limit) {
+  // TODO replace 3, with limit param
+  let logsPromise = getLogs(reportState, startDate, endDate, 3);
+
+  //const datapoints = {};
+  const datapoints = [];
+
+  logsPromise.then((values) => {
+    //for (let i = 0; i < values.length; i++) { logs[i] = values[i]; }
+    values.forEach((e) => {
+      datapoints.push([parseInt(e.data), Date.parse(e.selected_timestamp)]);
+    });
+  });
+
+  return datapoints;
 }
 
 function sendData(extsync_request, httpcode, data) {
@@ -161,23 +193,6 @@ function sendData(extsync_request, httpcode, data) {
     },
   });
   writeToScreen("Response sent: " + data);
-}
-
-function getDataArray(reportState, startDate, endDate, limit) {
-  // TODO replace 3, with limit param
-  let logsPromise = getLogs(reportState, startDate, endDate, 3);
-
-  //const datapoints = {};
-  const datapoints = [];
-
-  logsPromise.then((values) => {
-    //for (let i = 0; i < values.length; i++) { logs[i] = values[i]; }
-    values.forEach((e) => {
-      datapoints.push([parseInt(e.data), Date.parse(e.selected_timestamp)]);
-    });
-  });
-
-  return datapoints;
 }
 
 function getLogs(reportState, startDate, endDate, limit) {
