@@ -17,25 +17,6 @@ let wappsto = new Wappsto();
 const myMessage =
   "The application requires that the special network is running.";
 
-const testseries = [
-  {
-    target: "Amor Supremo",
-    datapoints: [
-      [12, Date.now() - 2000],
-      [33, Date.now() - 1000],
-      [54, Date.now()],
-    ],
-  },
-  {
-    target: "Bird Set Free",
-    datapoints: [
-      [-14, Date.now() - 2000],
-      [17, Date.now() - 1000],
-      [-18, Date.now()],
-    ],
-  },
-];
-
 function getDevice(deviceName) {
   // Require Devices that matches the name argument.
   wappsto.get(
@@ -143,38 +124,14 @@ function query(extsync_request, device) {
     }
   });
   Promise.all(logsPromises).then((values) => {
-    // values = [{..}, {..}, {..}]
-
+    // values = [{data: int, selected_timestamp: string}, {..}, {..}]
     for (let i = 0; i < values.length; i++) {
       const data = values[i];
-      let parsedArray = [];
-      data.forEach((e) => {
-        // e = {data: num, selected_timestamp: Date} -> [num, num]
-        parsedArray.push([parseInt(e.data), Date.parse(e.selected_timestamp)]);
-      });
-      series[i].datapoints = parsedArray;
+      series[i].datapoints = parseUDM(data);
     }
 
-    logger(series, testseries);
     sendData(extsync_request, 201, series);
   });
-}
-
-function getDataArray(reportState, startDate, endDate, limit) {
-  // TODO replace 3, with limit param
-  let logsPromise = getLogs(reportState, startDate, endDate, 3);
-
-  //const datapoints = {};
-  const datapoints = [];
-
-  logsPromise.then((values) => {
-    //for (let i = 0; i < values.length; i++) { logs[i] = values[i]; }
-    values.forEach((e) => {
-      datapoints.push([parseInt(e.data), Date.parse(e.selected_timestamp)]);
-    });
-  });
-
-  return datapoints;
 }
 
 function sendData(extsync_request, httpcode, data) {
@@ -192,7 +149,16 @@ function sendData(extsync_request, httpcode, data) {
       },
     },
   });
-  writeToScreen("Response sent: " + data);
+  writeToScreen(`Response sent - Code: ${httpcode}, endpoint: ${extsync_request.uri}, data: ${data}`);
+}
+
+function parseUDM(array) {
+  const parsedArray = [];
+  array.forEach((e) => {
+    // e = {data: int, selected_timestamp: string} -> [int, int]
+    parsedArray.push([parseInt(e.data), Date.parse(e.selected_timestamp)]);
+  });
+  return parsedArray;
 }
 
 function getLogs(reportState, startDate, endDate, limit) {
@@ -230,12 +196,4 @@ function writeToScreen(msg) {
   pre.style.wordWrap = "break-word";
   pre.innerHTML = msg;
   output.appendChild(pre);
-}
-
-function logger(series, testseries) {
-  console.log("Completed package:");
-  console.log(series);
-  //console.log(testseries);
-  console.log(JSON.stringify(series));
-  //console.log(JSON.stringify(testseries));
 }
